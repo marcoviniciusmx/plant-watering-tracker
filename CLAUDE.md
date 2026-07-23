@@ -76,8 +76,9 @@ Completo, porém simples:
 ## Stack
 
 React + Vite + styled-components (frontend); Node.js + Express, ES
-Modules (backend); PostgreSQL via Supabase (banco). Mesma stack fixa
-de toda a trilha.
+Modules (backend); PostgreSQL via Neon (banco). Mesma stack fixa
+de toda a trilha (ver nota sobre a troca de Supabase pra Neon no
+`CLAUDE.md` da raiz).
 
 ## Prompt do Claude Design
 
