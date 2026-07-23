@@ -33,3 +33,31 @@ export async function createPlant(req, res) {
         res.status(500).json({ error: error.message })
     }
 }
+
+export async function updatePlant(req, res) {
+    try {
+        const { id } = req.params
+        const { name, species, watering_interval_days } = req.body
+
+        if (!name || !species || !watering_interval_days) {
+            return res.status(400).json({ error: 'Todos os campos são obrigatórios' })
+        }
+
+        const result = await pool.query(
+            ` UPDATE plants 
+        SET name = $1, species = $2, watering_interval_days = $3
+        WHERE id = $4
+        RETURNING*`,
+        [name, species, watering_interval_days, id]
+        )
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'ID Inexistente'})
+        }
+
+        res.status(200).json(result.rows[0])
+    } catch (error) {
+        console.log('Erro ao atualizar planta', error)
+        res.status(500).json({ error: error.message })
+    }
+} 
