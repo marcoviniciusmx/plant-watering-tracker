@@ -82,3 +82,32 @@ export async function deletePlant(req, res) {
         res.status(500).json({ error: error.message })
     }
 }
+
+export async function waterPlant(req, res) {
+    try{
+        const { id } = req.params
+        const { last_watered_date } = req.body
+
+        if (!last_watered_date) {
+            return res.status(400).json({ error: 'Campo obrigatório'})
+        }
+
+        const result = await pool.query (
+            `UPDATE plants
+            SET last_watered_date = $1
+            WHERE id = $2
+            RETURNING*`,
+            [last_watered_date, id]
+        )
+    
+        if (result.rowCount === 0) {
+            return res.status(404).json({error: 'ID inexistente, impossível registrar rega'})
+        }
+
+        res.status(200).json(result.rows[0])
+
+    } catch (error) {
+        console.log('Erro ao registrar rega', error)
+        res.status(500).json({ error: error.message })
+    }
+}
