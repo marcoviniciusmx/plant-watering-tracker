@@ -52,7 +52,7 @@ export async function updatePlant(req, res) {
         )
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ error: 'ID Inexistente'})
+            return res.status(404).json({ error: 'ID inexistente, impossível atualizar'})
         }
 
         res.status(200).json(result.rows[0])
@@ -61,3 +61,24 @@ export async function updatePlant(req, res) {
         res.status(500).json({ error: error.message })
     }
 } 
+
+export async function deletePlant(req, res) {
+    try {
+        const { id } = req.params
+
+        const result = await pool.query (
+            `DELETE FROM plants WHERE id = $1 RETURNING*`,
+            [id]
+        )
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'ID inexistente, impossível deletar'})
+        }
+
+        res.status(200).json(result.rows[0])
+
+    } catch (error) {
+        console.log('Erro ao deletar planta', error)
+        res.status(500).json({ error: error.message })
+    }
+}
