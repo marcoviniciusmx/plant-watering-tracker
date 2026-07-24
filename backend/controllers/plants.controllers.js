@@ -1,11 +1,16 @@
 import pool from '../database/db.js'
+import { calculateStatus } from '../utils/plantStatus.js'
 
 export async function plantsList(req, res) {
     try {
         const result = await pool.query('SELECT * FROM plants')
 
-        const data = result.rows
+        const data = result.rows.map(plant => ({
+            ...plant,
+            status: calculateStatus(plant.last_watered_date, plant.watering_interval_days)
+        }))
         res.json(data)
+        
     } catch (error) {
         console.log('Erro ao listar plantas', error)
         res.status(500).json({ error: error.message })
@@ -48,11 +53,11 @@ export async function updatePlant(req, res) {
         SET name = $1, species = $2, watering_interval_days = $3
         WHERE id = $4
         RETURNING*`,
-        [name, species, watering_interval_days, id]
+            [name, species, watering_interval_days, id]
         )
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ error: 'ID inexistente, impossível atualizar'})
+            return res.status(404).json({ error: 'ID inexistente, impossível atualizar' })
         }
 
         res.status(200).json(result.rows[0])
@@ -60,19 +65,19 @@ export async function updatePlant(req, res) {
         console.log('Erro ao atualizar planta', error)
         res.status(500).json({ error: error.message })
     }
-} 
+}
 
 export async function deletePlant(req, res) {
     try {
         const { id } = req.params
 
-        const result = await pool.query (
+        const result = await pool.query(
             `DELETE FROM plants WHERE id = $1 RETURNING*`,
             [id]
         )
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ error: 'ID inexistente, impossível deletar'})
+            return res.status(404).json({ error: 'ID inexistente, impossível deletar' })
         }
 
         res.status(200).json(result.rows[0])
@@ -84,24 +89,24 @@ export async function deletePlant(req, res) {
 }
 
 export async function waterPlant(req, res) {
-    try{
+    try {
         const { id } = req.params
         const { last_watered_date } = req.body
 
         if (!last_watered_date) {
-            return res.status(400).json({ error: 'Campo obrigatório'})
+            return res.status(400).json({ error: 'Campo obrigatório' })
         }
 
-        const result = await pool.query (
+        const result = await pool.query(
             `UPDATE plants
             SET last_watered_date = $1
             WHERE id = $2
             RETURNING*`,
             [last_watered_date, id]
         )
-    
+
         if (result.rowCount === 0) {
-            return res.status(404).json({error: 'ID inexistente, impossível registrar rega'})
+            return res.status(404).json({ error: 'ID inexistente, impossível registrar rega' })
         }
 
         res.status(200).json(result.rows[0])
