@@ -1,6 +1,6 @@
 import { Backdrop, Brand, CancelButton, Card, CardActions, CardHeader, CardMeta, Dialog, DialogActions, DialogTitle, Divider, FieldsWrapper, Header, IconBox, IconButton, Input, Label, LastWatered, Main, MainWrapper, NewPlantButton, PlantInfo, PlantName, PlantsGrid, PlantSpecies, StatusDot, StatusTag, SubmitButton, WaterButton } from "./styles"
 import { useState, useEffect } from 'react'
-import { getPlants, createPlant } from '../../services/plantsApi.js'
+import { getPlants, createPlant, updatePlant, waterPlant } from '../../services/plantsApi.js'
 import { getStatusStyle } from '../../utils/plantStatusStyles.js'
 import { formatLastWatered } from '../../utils/formatDate.js'
 
@@ -8,6 +8,7 @@ function Home() {
     const [plants, setPlants] = useState([])
     const [modal, setModal] = useState(null)
     const [formData, setFormData] = useState({ name: '', species: '', watering_interval_days: '' })
+    const [wateringDate, setWateringDate] = useState('')
 
     async function fetchPlants() {
         const data = await getPlants()
@@ -57,7 +58,10 @@ function Home() {
                                             <IconButton aria-label="Excluir planta">
                                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                                             </IconButton>
-                                            <IconButton aria-label="Editar planta">
+                                            <IconButton aria-label="Editar planta" onClick={() => {
+                                                setModal({ type: 'edit', plant })
+                                                setFormData({ name: plant.name, species: plant.species, watering_interval_days: plant.watering_interval_days })
+                                            }}>
                                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
                                             </IconButton>
                                         </CardActions>
@@ -72,7 +76,11 @@ function Home() {
 
                                     <StatusTag $bg={style.bg} $text={style.text}>{plant.status}</StatusTag>
 
-                                    <WaterButton>Regar agora</WaterButton>
+                                    <WaterButton onClick={() => {
+                                        setModal({ type: 'water', plant })
+                                        setWateringDate(new Date().toISOString().slice(0, 10))
+                                    }}
+                                    >Regar agora</WaterButton>
                                 </Card>
                             )
                         })}
@@ -111,6 +119,67 @@ function Home() {
                             <DialogActions>
                                 <CancelButton onClick={() => { setModal(null) }} type="button">Cancelar</CancelButton>
                                 <SubmitButton type="submit">Adicionar planta</SubmitButton>
+                            </DialogActions>
+                        </form>
+                    </Dialog>
+                </Backdrop>
+            )}
+
+            {modal?.type === 'edit' && (
+                <Backdrop>
+                    <Dialog>
+                        <DialogTitle>Editar planta</DialogTitle>
+                        <form onSubmit={async (e) => {
+                            e.preventDefault()
+                            const created = await updatePlant(modal.plant.id, formData)
+                            await fetchPlants()
+                            setModal(null)
+                            setFormData({ name: '', species: '', watering_interval_days: '' })
+                        }}>
+                            <FieldsWrapper>
+                                <div>
+                                    <Label htmlFor="reg-name">Nome</Label>
+                                    <Input id="reg-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="reg-species">Espécie</Label>
+                                    <Input id="reg-species" value={formData.species} onChange={(e) => setFormData({ ...formData, species: e.target.value })} required />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="reg-interval">Intervalo</Label>
+                                    <Input type="number" min="1" id="reg-interval" value={formData.watering_interval_days} onChange={(e) => setFormData({ ...formData, watering_interval_days: e.target.value })} required />
+                                </div>
+                            </FieldsWrapper>
+                            <DialogActions>
+                                <CancelButton onClick={() => { setModal(null) }} type="button">Cancelar</CancelButton>
+                                <SubmitButton type="submit">Salvar Alterações</SubmitButton>
+                            </DialogActions>
+                        </form>
+                    </Dialog>
+                </Backdrop>
+            )}
+
+            {modal?.type === 'water' && (
+                <Backdrop>
+                    <Dialog>
+                        <DialogTitle>{`Regar ${modal.plant.name}`}</DialogTitle>
+                        <form onSubmit={async (e) => {
+                            e.preventDefault()
+                            const created = await waterPlant(modal.plant.id, wateringDate)
+                            await fetchPlants()
+                            setModal(null)
+                        }}>
+                            <FieldsWrapper>
+                                <div>
+                                    <Label htmlFor="water-date">Data da rega</Label>
+                                    <Input id="water-date" type="date" value={wateringDate} onChange={(e) => setWateringDate(e.target.value)} required />
+                                </div>
+                            </FieldsWrapper>
+                            <DialogActions>
+                                <CancelButton onClick={() => { setModal(null) }} type="button">Cancelar</CancelButton>
+                                <SubmitButton type="submit">Registrar rega</SubmitButton>
                             </DialogActions>
                         </form>
                     </Dialog>

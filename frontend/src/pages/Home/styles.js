@@ -269,3 +269,21 @@ export const SubmitButton = styled.button`
     font-weight: 700;
     cursor: pointer;
 `
+
+export const DialogText = styled.p`
+    margin: 0 0 24px;
+    color: #6E7D70;
+    font-size: 14.5px;
+`
+
+export const DangerButton = styled.button`
+    background: #C1503F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 11px 20px;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+`
