@@ -14,13 +14,24 @@ hoje, ou atrasada.
 
 ## Grau de ajuda do Claude neste projeto
 
-**Máximo — modo Socrático completo, sem exceção.** Este é o primeiro
-projeto da trilha, focado em fixar a mecânica básica: rota Express,
-query SQL, fetch no React, estado. O Claude guia por perguntas, uma
-etapa de cada vez, nunca escreve código da aplicação, sempre espera a
-resposta de Marco e avalia antes de avançar. As únicas exceções são
-este próprio CLAUDE.md, o prompt do Claude Design, o README final, e
-verificações de estado (`ls`, `git status`, etc.) — mesmas exceções
+**Máximo — modo Socrático completo, com uma exceção adicional.** Este é
+o primeiro projeto da trilha, focado em fixar a mecânica básica: rota
+Express, query SQL, fetch no React, estado. O Claude guia por
+perguntas, uma etapa de cada vez, nunca escreve código de lógica da
+aplicação, sempre espera a resposta de Marco e avalia antes de
+avançar. As exceções são este próprio CLAUDE.md, o prompt do Claude
+Design, o README final, verificações de estado (`ls`, `git status`,
+etc.) — mesmas exceções
+
+**Exceção adicional (decidida por Marco em 2026-07-24):** blocos de
+CSS puro em `styled-components` — sem prop dinâmica, sem lógica, sem
+conceito novo de React — o Claude pode escrever direto a partir da
+especificação de valores (cores, espaçamentos) já acordada com Marco,
+em vez de Marco digitar manualmente. Motivo: é cópia mecânica de
+valores de design, não ensina mecânica nova (o foco do projeto é
+Express/SQL/fetch/estado, não CSS). Continua Socrático pleno pra tudo
+que envolve JS/React de verdade — estado, efeitos, eventos, lógica de
+negócio, chamadas de API.
 fixas de toda a trilha.
 
 ## Modelo de dados

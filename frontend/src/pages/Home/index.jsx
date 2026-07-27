@@ -1,17 +1,21 @@
-import { Brand, Card, CardActions, CardHeader, CardMeta, Divider, Header, IconBox, IconButton, LastWatered, Main, MainWrapper, NewPlantButton, PlantInfo, PlantName, PlantsGrid, PlantSpecies, StatusDot, StatusTag, WaterButton } from "./styles"
+import { Backdrop, Brand, CancelButton, Card, CardActions, CardHeader, CardMeta, Dialog, DialogActions, DialogTitle, Divider, FieldsWrapper, Header, IconBox, IconButton, Input, Label, LastWatered, Main, MainWrapper, NewPlantButton, PlantInfo, PlantName, PlantsGrid, PlantSpecies, StatusDot, StatusTag, SubmitButton, WaterButton } from "./styles"
 import { useState, useEffect } from 'react'
-import { getPlants } from '../../services/plantsApi.js'
+import { getPlants, createPlant } from '../../services/plantsApi.js'
 import { getStatusStyle } from '../../utils/plantStatusStyles.js'
 import { formatLastWatered } from '../../utils/formatDate.js'
 
 function Home() {
     const [plants, setPlants] = useState([])
+    const [modal, setModal] = useState(null)
+    const [formData, setFormData] = useState({ name: '', species: '', watering_interval_days: '' })
+
+    async function fetchPlants() {
+        const data = await getPlants()
+        setPlants(data)
+    }
 
     useEffect(() => {
-        async function fetchPlants() {
-            const data = await getPlants()
-            setPlants(data)
-        }
+
         fetchPlants()
     }, [])
 
@@ -22,7 +26,7 @@ function Home() {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4E7A56" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69s-5 5.86-7.07 9.06A6 6 0 0 0 12 21.5a6 6 0 0 0 7.07-9.75C16.93 8.55 12 2.69 12 2.69Z" /></svg>
                 </IconBox>
                 <Brand>Regador de Plantas</Brand>
-                <NewPlantButton>
+                <NewPlantButton onClick={() => setModal({ type: 'register' })}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                     Nova Planta
                 </NewPlantButton>
@@ -30,7 +34,7 @@ function Home() {
 
             <Main>
                 <MainWrapper>
-                    <h1 style={{margin: '0 0 6px'}}>Minhas Plantas</h1>
+                    <h1 style={{ margin: '0 0 6px' }}>Minhas Plantas</h1>
                     <p>{plants.length} {plants.length === 1 ? 'planta' : 'plantas'}</p>
                 </MainWrapper>
                 {plants.length > 0 ?
@@ -76,6 +80,43 @@ function Home() {
                     <Card>Nenhuma planta cadastrada ainda</Card>
                 }
             </Main>
+
+            {modal?.type === 'register' && (
+                <Backdrop>
+                    <Dialog>
+                        <DialogTitle>Nova planta</DialogTitle>
+                        <form onSubmit={async (e) => {
+                            e.preventDefault()
+                            const created = await createPlant(formData)
+                            await fetchPlants()
+                            setModal(null)
+                            setFormData({ name: '', species: '', watering_interval_days: '' })
+                        }}>
+                            <FieldsWrapper>
+                                <div>
+                                    <Label htmlFor="reg-name">Nome</Label>
+                                    <Input id="reg-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="reg-species">Espécie</Label>
+                                    <Input id="reg-species" value={formData.species} onChange={(e) => setFormData({ ...formData, species: e.target.value })} required />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="reg-interval">Intervalo</Label>
+                                    <Input type="number" min="1" id="reg-interval" value={formData.watering_interval_days} onChange={(e) => setFormData({ ...formData, watering_interval_days: e.target.value })} required />
+                                </div>
+                            </FieldsWrapper>
+                            <DialogActions>
+                                <CancelButton onClick={() => { setModal(null) }} type="button">Cancelar</CancelButton>
+                                <SubmitButton type="submit">Adicionar planta</SubmitButton>
+                            </DialogActions>
+                        </form>
+                    </Dialog>
+                </Backdrop>
+            )}
+
         </>
     )
 }

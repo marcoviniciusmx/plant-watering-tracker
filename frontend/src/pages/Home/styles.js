@@ -179,11 +179,93 @@ export const StatusDot = styled.span`
 `
 
 export const StatusTag = styled.span`
-    padding: 6px 12px; 
-    border-radius: 999px; 
-    font-size: 12.5px; 
-    font-weight: 600; 
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
     align-self: flex-start;
     background: ${(props) => props.$bg};
     color: ${(props) => props.$text};
+`
+
+export const Backdrop = styled.div`
+    position: fixed;
+    inset: 0;
+    background: rgba(46,59,49,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+`
+
+export const Dialog = styled.div`
+    background: #FFFDF9;
+    border-radius: 24px;
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 50px rgba(46,59,49,0.25);
+    box-sizing: border-box;
+`
+
+export const DialogTitle = styled.div`
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+`
+
+export const FieldsWrapper = styled.div`
+    display: grid;
+    gap: 16px;
+`
+
+export const Label = styled.label`
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5C6B5E;
+    margin-bottom: 6px;
+`
+
+export const Input = styled.input`
+    width: 100%;
+    box-sizing: border-box;
+    border: 1.5px solid #E7E1D3;
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: inherit;
+    font-size: 14.5px;
+    background: #FFFFFF;
+`
+
+export const DialogActions = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+`
+
+export const CancelButton = styled.button`
+    background: transparent;
+    border: none;
+    color: #6E7D70;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 11px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+`
+
+export const SubmitButton = styled.button`
+    background: #4E7A56;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 11px 20px;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
 `
