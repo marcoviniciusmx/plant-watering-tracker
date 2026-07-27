@@ -84,9 +84,34 @@ de toda a trilha (ver nota sobre a troca de Supabase pra Neon no
 
 Gerado — ver `design-prompt.md` nesta pasta.
 
+## Endpoints implementados
+
+| Método | Rota | O que faz |
+|---|---|---|
+| `GET` | `/plants` | Lista todas as plantas, cada uma com `status` calculado (`calculateStatus`, em `backend/utils/plantStatus.js`) |
+| `POST` | `/plants` | Cadastra planta (`name`, `species`, `watering_interval_days`); `last_watered_date` nasce `NULL` |
+| `PATCH` | `/plants/:id` | Edita `name`, `species`, `watering_interval_days` de uma planta existente |
+| `PATCH` | `/plants/:id/water` | Registra rega: sobrescreve `last_watered_date` com a data enviada no corpo |
+| `DELETE` | `/plants/:id` | Remove a planta |
+
+Todos os endpoints de escrita usam queries parametrizadas (`$1`, `$2`,
+...) e devolvem `404` quando o `id` não corresponde a nenhuma linha
+(`rowCount === 0`).
+
 ## Onde estamos agora
 
-Modelagem de domínio concluída via Socrático (campos da planta, regra
-de status, ação de regar, CRUD completo). Próximo passo: schema SQL da
-tabela `plants` e início do backend (rotas + controllers), também via
-Socrático, com Marco escrevendo o código.
+Backend completo: banco (Neon) conectado via `db.js` (com type parser
+customizado pra coluna `DATE` não vir com hora/fuso — ver commit
+`c5b58f0`), servidor Express de pé, e todo o CRUD + regra de status
+implementados e testados via Socrático completo, com Marco escrevendo
+o código linha a linha.
+
+Frontend em andamento (Vite + React + styled-components), seguindo a
+referência visual "Organic" (`visualReference/`): `GlobalStyle`
+configurado (paleta, fonte Manrope via Google Fonts), tela `Home`
+consumindo `GET /plants` (`services/plantsApi.js`) e renderizando o
+grid de cards com status colorido (`utils/plantStatusStyles.js`) e
+data formatada (`utils/formatDate.js`). Próximo passo: modais de
+cadastrar, editar, excluir e registrar rega (estado de abrir/fechar
+modal, formulários controlados, e ligação com os outros endpoints do
+backend).
