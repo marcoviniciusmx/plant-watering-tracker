@@ -1,6 +1,6 @@
-import { Backdrop, Brand, CancelButton, Card, CardActions, CardHeader, CardMeta, Dialog, DialogActions, DialogTitle, Divider, FieldsWrapper, Header, IconBox, IconButton, Input, Label, LastWatered, Main, MainWrapper, NewPlantButton, PlantInfo, PlantName, PlantsGrid, PlantSpecies, StatusDot, StatusTag, SubmitButton, WaterButton } from "./styles"
+import { Backdrop, Brand, CancelButton, Card, CardActions, CardHeader, CardMeta, DangerButton, Dialog, DialogActions, DialogText, DialogTitle, Divider, FieldsWrapper, Header, IconBox, IconButton, Input, Label, LastWatered, Main, MainWrapper, NewPlantButton, PlantInfo, PlantName, PlantsGrid, PlantSpecies, StatusDot, StatusTag, SubmitButton, WaterButton } from "./styles"
 import { useState, useEffect } from 'react'
-import { getPlants, createPlant, updatePlant, waterPlant } from '../../services/plantsApi.js'
+import { getPlants, createPlant, updatePlant, waterPlant, deletePlant } from '../../services/plantsApi.js'
 import { getStatusStyle } from '../../utils/plantStatusStyles.js'
 import { formatLastWatered } from '../../utils/formatDate.js'
 
@@ -55,7 +55,7 @@ function Home() {
                                         </PlantInfo>
 
                                         <CardActions>
-                                            <IconButton aria-label="Excluir planta">
+                                            <IconButton aria-label="Excluir planta" onClick={() => setModal({ type: 'delete', plant })}>
                                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                                             </IconButton>
                                             <IconButton aria-label="Editar planta" onClick={() => {
@@ -182,6 +182,23 @@ function Home() {
                                 <SubmitButton type="submit">Registrar rega</SubmitButton>
                             </DialogActions>
                         </form>
+                    </Dialog>
+                </Backdrop>
+            )}
+
+            {modal?.type === 'delete' && (
+                <Backdrop>
+                    <Dialog>
+                        <DialogTitle>{`Remover ${modal.plant.name}?`}</DialogTitle>
+                        <DialogText>Isso exclui a planta permanentemente. Essa ação não pode ser desfeita.</DialogText>
+                        <DialogActions>
+                            <CancelButton onClick={() => setModal(null)} type="button">Cancelar</CancelButton>
+                            <DangerButton onClick={async () => {
+                                await deletePlant(modal.plant.id)
+                                await fetchPlants()
+                                setModal(null)
+                            }} type="button">Remover</DangerButton>
+                        </DialogActions>
                     </Dialog>
                 </Backdrop>
             )}
