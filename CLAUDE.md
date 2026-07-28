@@ -117,12 +117,15 @@ customizado pra coluna `DATE` não vir com hora/fuso — ver commit
 implementados e testados via Socrático completo, com Marco escrevendo
 o código linha a linha.
 
-Frontend em andamento (Vite + React + styled-components), seguindo a
+Frontend completo (Vite + React + styled-components), seguindo a
 referência visual "Organic" (`visualReference/`): `GlobalStyle`
 configurado (paleta, fonte Manrope via Google Fonts), tela `Home`
-consumindo `GET /plants` (`services/plantsApi.js`) e renderizando o
+consumindo todos os endpoints do backend via `services/plantsApi.js`,
 grid de cards com status colorido (`utils/plantStatusStyles.js`) e
-data formatada (`utils/formatDate.js`). Próximo passo: modais de
-cadastrar, editar, excluir e registrar rega (estado de abrir/fechar
-modal, formulários controlados, e ligação com os outros endpoints do
-backend).
+data formatada (`utils/formatDate.js`), e os 4 modais (cadastrar,
+editar, excluir, registrar rega) com estado único de modal
+(`{ type, plant }`) e formulários controlados. CRUD completo de ponta
+a ponta, testado manualmente.
+
+Próximo passo: revisão geral (testes de UI mais completos, possíveis
+ajustes finos de layout) e, ao final, o README.md do projeto.
